@@ -1740,21 +1740,21 @@ async def history_handler(callback: CallbackQuery):
     )
 
     await callback.answer() 
-    async def get_asset_price_usd(asset):
-    asset = asset.upper()
+     async def get_asset_price_usd(asset):
+      asset = asset.upper()
 
-    if asset == "GOLD":
-        return await get_gold_usd()
+       if asset == "GOLD":
+          return await get_gold_usd()
 
-    coin_id = None
+      coin_id = None
 
-    for cid, symbol in CRYPTO_SYMBOLS.items():
-        if symbol == asset:
-            coin_id = cid
-            break
+     for cid, symbol in CRYPTO_SYMBOLS.items():
+         if symbol == asset:
+             coin_id = cid
+             break
 
-    if not coin_id:
-        return None
+     if not coin_id:
+         return None
 
     data = await get_crypto_prices(True)
 
