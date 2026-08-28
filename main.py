@@ -1739,7 +1739,8 @@ async def history_handler(callback: CallbackQuery):
         "\n".join(lines)
     )
 
-    await callback.answer()async def get_asset_price_usd(asset):
+    await callback.answer() 
+    async def get_asset_price_usd(asset):
     asset = asset.upper()
 
     if asset == "GOLD":
