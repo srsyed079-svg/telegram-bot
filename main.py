@@ -1,4 +1,5 @@
 # telegram-b
+# telegram-b
 import asyncio
 import json
 import logging
@@ -1049,7 +1050,7 @@ async def start_handler(message: Message):
 
     await message.answer(
         "🌍 Gold & Rates Pro\n\n"
-        + "Choose your language / اختر لغتك / اپنی زبان منتخب کریں:",
+        "Choose your language / اختر لغتك / اپنی زبان منتخب کریں:",
         reply_markup=lang_keyboard(),
     )
 
@@ -1057,32 +1058,24 @@ async def start_handler(message: Message):
 @dp.callback_query(F.data.startswith("lang:"))
 async def language_handler(callback: CallbackQuery):
     user_id = callback.from_user.id
-    lang = callback.data.split(":", 1)[1]
-
-    if lang not in SUPPORTED_LANGUAGES:
-        lang = "ar"
-
     ensure_user(user_id)
+
+    lang = callback.data.split(":")[1]
     set_language(user_id, lang)
 
     await callback.message.edit_text(
         tr(lang, "choose_interest"),
         reply_markup=interest_keyboard(lang),
     )
-
     await callback.answer()
 
 
 @dp.callback_query(F.data.startswith("interest:"))
 async def interest_handler(callback: CallbackQuery):
     user_id = callback.from_user.id
-    interest = callback.data.split(":", 1)[1]
-
     ensure_user(user_id)
 
-    if interest not in SUPPORTED_INTERESTS:
-        interest = "full"
-
+    interest = callback.data.split(":")[1]
     set_interest(user_id, interest)
 
     user = get_user(user_id)
@@ -1093,10 +1086,9 @@ async def interest_handler(callback: CallbackQuery):
         reply_markup=main_keyboard(
             lang,
             is_premium(user_id),
-            interest,
+            user["interest"],
         ),
     )
-
     await callback.answer()
 
 
@@ -1116,7 +1108,6 @@ async def home_handler(callback: CallbackQuery):
             user["interest"],
         ),
     )
-
     await callback.answer()
 
 
@@ -1739,22 +1730,24 @@ async def history_handler(callback: CallbackQuery):
         "\n".join(lines)
     )
 
-    await callback.answer() 
-     async def get_asset_price_usd(asset):
-      asset = asset.upper()
+    await callback.answer()
 
-       if asset == "GOLD":
-          return await get_gold_usd()
 
-      coin_id = None
+async def get_asset_price_usd(asset):
+    asset = asset.upper()
 
-     for cid, symbol in CRYPTO_SYMBOLS.items():
-         if symbol == asset:
-             coin_id = cid
-             break
+    if asset == "GOLD":
+        return await get_gold_usd()
 
-     if not coin_id:
-         return None
+    coin_id = None
+
+    for cid, symbol in CRYPTO_SYMBOLS.items():
+        if symbol == asset:
+            coin_id = cid
+            break
+
+    if not coin_id:
+        return None
 
     data = await get_crypto_prices(True)
 
@@ -2201,7 +2194,7 @@ async def main():
     if not BOT_TOKEN:
         raise RuntimeError(
             "BOT_TOKEN is missing. "
-            "Add BOT_TOKEN to Replit Secrets."
+            "Add BOT_TOKEN to environment variables."
         )
 
     init_db()
